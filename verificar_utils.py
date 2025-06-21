@@ -5,7 +5,11 @@ import os
 
 
 def verificar_correos(
-    df, api_key, output_path="csv/correos_verificados.csv", sleep_time=1.0
+    df,
+    api_key,
+    output_path="csv/correos_verificados.csv",
+    sleep_time=1.0,
+    callback=None,
 ):
     resultados = []
 
@@ -39,11 +43,13 @@ def verificar_correos(
             print(f"❌ Excepción con {email}: {e}")
             break
 
-        resultados.append(
-            {"nombre": nombre, "email": email, "resultado_verificacion": resultado}
-        )
+        if resultado == "válido":
+            resultados.append({"nombre": nombre, "email": email})
 
         print(f"[{i+1}/{total}] {email} → {resultado}")
+        if callback:
+            callback(i + 1, total, f"{email} → {resultado}")
+
         time.sleep(sleep_time)
 
     resultado_df = pd.DataFrame(resultados)

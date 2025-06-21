@@ -96,8 +96,15 @@ with tabs[1]:
         st.dataframe(df_verif)
 
         if st.button("✅ Verificar correos"):
+            verificacion_box = st.empty()
+
+            def update_callback(actual, total, mensaje):
+                verificacion_box.markdown(f"`[{actual}/{total}]` {mensaje}")
+
             with st.spinner("Verificando..."):
-                resultado_df = verificar_correos(df_verif, api_key)
+                resultado_df = verificar_correos(
+                    df_verif, api_key, callback=update_callback
+                )
                 st.success("Verificación completada. Resultado:")
                 st.dataframe(resultado_df)
                 st.download_button(
