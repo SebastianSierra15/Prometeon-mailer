@@ -1,0 +1,159 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PrometeonDev</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000a30;
+        font-family: 'Vonca', system-ui, sans-serif;
+        color: #000a30;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #f5f5f5;;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+      }
+
+      .header {
+        background-color: #0376ff;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .header img {
+        max-width: 160px;
+      }
+
+      .content {
+        padding: 30px;
+        font-family: 'Hero New', system-ui, sans-serif;
+      }
+
+      .content p {
+        font-size: 15px;
+        margin-bottom: 16px;
+      }
+
+      .content ul {
+        padding-left: 20px;
+        font-size: 15px;
+      }
+
+      .content a {
+        color: #0376ff;
+        text-decoration: none;
+      }
+
+      .cta {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #0376ff;
+        color: white !important;
+        font-weight: bold;
+        text-decoration: none !important;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #025ac2;
+      }
+
+      .unsubscribe {
+        font-size: 12px;
+        text-align: center;
+        color: #888;
+        margin-top: 40px;
+      }
+
+      .unsubscribe a {
+        color: #888;
+        text-decoration: underline;
+      }
+
+      .footer {
+        font-size: 13px;
+        text-align: center;
+        padding: 16px;
+        background-color: #000a30;
+        color: #e6e6e6;
+      }
+
+      .footer a {
+        color: #0376ff;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        color: #5aa9ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://prometeondev.com/global/logo-blanco-texto.png" alt="PrometeonDev Logo" />
+      </div>
+      <div class="content">
+        <p>Hola <strong>{nombre}</strong>,</p>
+
+        <p>
+          Esperamos que estés teniendo un buen día. Te escribimos desde <strong>PrometeonDev</strong>, donde ayudamos a empresas de <strong>Florencia y otras ciudades</strong> a crecer con soluciones digitales a medida.
+        </p>
+
+        <p>
+          Desarrollamos <strong>sitios web modernos</strong> adaptados a negocios como tiendas, restaurantes, empresas, microempresas o emprendimientos. También creamos <strong>software a la medida</strong> para automatizar procesos internos como reservas, ventas o atención al cliente.
+        </p>
+
+        <p>
+          Sabemos que dar el primer paso al mundo digital puede parecer complicado. Por eso, te ofrecemos una <strong>asesoría gratuita</strong> para entender cómo la tecnología puede ayudarte a vender más, organizar mejor tu negocio o atender a tus clientes de forma más fácil. Solo necesitas contactarnos, sin compromiso.
+        </p>
+
+        <p style="font-weight: 600;">Tienes tres formas fáciles de contactarnos:</p>
+        <ul>
+          <li>💬 Escríbenos por <a href="{whatsapp_url}">WhatsApp</a></li>
+          <li>🌐 Visita nuestra web: <a href="https://prometeondev.com">prometeondev.com</a></li>
+          <li>📅 Agenda una llamada: <a href="{calendly_url}">Calendly</a></li>
+        </ul>
+
+        <div class="cta">
+          <a href="{whatsapp_url}" class="btn">Contactar por WhatsApp</a>
+        </div>
+
+        <div class="unsubscribe">
+          <p>
+            <a href="mailto:developer@prometeondev.com?subject=Desuscribirme">
+              No quiero recibir más mensajes
+            </a>
+          </p>
+        </div>
+
+        <p style="margin-top: 40px; font-weight: 500;">
+          Un saludo cordial,<br />
+          <strong>{firma_nombre}</strong><br />
+          PrometeonDev
+        </p>
+      </div>
+      <div class="footer">
+        <p>© {año_actual} PrometeonDev. Todos los derechos reservados.</p>
+        <p>
+          <a href="https://prometeondev.com">Sitio Web</a> |
+          <a href="mailto:developer@prometeondev.com">Soporte</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
