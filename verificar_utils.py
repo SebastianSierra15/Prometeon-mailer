@@ -7,13 +7,11 @@ import os
 def verificar_correos(
     df,
     api_key,
-    output_path="csv/correos_verificados.csv",
     sleep_time=1.0,
     callback=None,
 ):
     resultados = []
 
-    os.makedirs("csv", exist_ok=True)
     df = df.drop_duplicates(subset=["email"])
     total = len(df)
 
@@ -53,5 +51,4 @@ def verificar_correos(
         time.sleep(sleep_time)
 
     resultado_df = pd.DataFrame(resultados)
-    resultado_df.to_csv(output_path, index=False)
     return resultado_df

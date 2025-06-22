@@ -20,7 +20,7 @@ def enviar_correos(
     correos_df,
     html_template_str,
     enviados_existentes=set(),
-    max_envios=1000,
+    max_envios=100,
     callback=None,
 ):
 
@@ -44,8 +44,12 @@ def enviar_correos(
         for _, row in correos_df.iterrows():
             nombre = row["nombre"]
             email = row["email"]
+
             if email in enviados_actuales:
                 continue
+
+            if count >= max_envios:
+                break
 
             html_content = (
                 html_template_str.replace("{nombre}", nombre)
@@ -70,12 +74,6 @@ def enviar_correos(
                 print(mensaje)
                 resultados.append(mensaje)
 
-                os.makedirs("csv", exist_ok=True)
-                with open("csv/enviados.csv", "a", encoding="utf-8") as f:
-                    if count == 1 and not os.path.exists("csv/enviados.csv"):
-                        f.write("email\n")
-                    f.write(email + "\n")
-
             except Exception as e:
                 mensaje = f"❌ Error al enviar a {email}: {e}"
                 resultados.append(mensaje)
@@ -87,4 +85,4 @@ def enviar_correos(
             if count >= max_envios:
                 break
 
-    return resultados
+    return resultados, enviados_actuales

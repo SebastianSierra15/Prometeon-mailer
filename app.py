@@ -1,9 +1,19 @@
 import streamlit as st
 import pandas as pd
+import os
+from dotenv import load_dotenv
 from correo_utils import enviar_correos as enviar_func
 from verificar_utils import verificar_correos
 
+load_dotenv()
+
 st.set_page_config(page_title="PrometeonMailer", page_icon="📧", layout="centered")
+
+# Acceso restringido
+st.sidebar.markdown("🔐 Acceso restringido")
+clave_ingresada = st.sidebar.text_input("Contraseña de acceso", type="password")
+CLAVE_SECRETA = os.getenv("SECRET_KEY")
+acceso_autorizado = clave_ingresada == CLAVE_SECRETA
 
 st.title("Prometeon - Envío de Correos Masivos")
 
@@ -30,7 +40,22 @@ with tabs[0]:
             "📂 Lista de correos dados de baja (opcional)", type=["csv"], key="baja"
         )
 
+        max_envios = st.number_input(
+            "🔢 ¿Cuántos correos deseas enviar?",
+            min_value=1,
+            max_value=1000,
+            value=50,
+            step=1,
+            help="Límite diario recomendado: 50",
+        )
+
         if st.button("📨 Enviar correos"):
+            if not acceso_autorizado:
+                st.error(
+                    "🚫 No tienes permiso para enviar correos. Ingresa la clave correcta en el panel lateral."
+                )
+                st.stop()
+
             progreso = st.progress(0)
             resultados_box = st.empty()
             resultados = []
@@ -53,24 +78,16 @@ with tabs[0]:
                 resultados_box.markdown("<br>".join(resultados), unsafe_allow_html=True)
 
             with st.spinner("Enviando correos..."):
-                enviar_func(
+                resultados, enviados_exitosos = enviar_func(
                     correos_df=df,
                     html_template_str=plantilla,
                     enviados_existentes=enviados_existentes.union(baja_existente),
-                    max_envios=50,
+                    max_envios=max_envios,
                     callback=update_callback,
                 )
 
                 # Preparar CSV para descarga
-                enviados_nuevos_df = pd.DataFrame(
-                    {
-                        "email": list(
-                            enviados_existentes.union(
-                                {row["email"] for _, row in df.iterrows()}
-                            )
-                        )
-                    }
-                )
+                enviados_nuevos_df = pd.DataFrame({"email": list(enviados_exitosos)})
                 st.download_button(
                     "📥 Descargar correos enviados",
                     enviados_nuevos_df.to_csv(index=False),
@@ -96,6 +113,12 @@ with tabs[1]:
         st.dataframe(df_verif)
 
         if st.button("✅ Verificar correos"):
+            if not acceso_autorizado:
+                st.error(
+                    "🚫 No tienes permiso para verificar correos. Ingresa la clave correcta en el panel lateral."
+                )
+                st.stop()
+
             verificacion_box = st.empty()
 
             def update_callback(actual, total, mensaje):
