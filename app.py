@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from correo_utils import enviar_correos as enviar_func
 from verificar_utils import verificar_correos
+from datetime import datetime
 
 load_dotenv()
 
@@ -15,7 +16,7 @@ clave_ingresada = st.sidebar.text_input("Contraseña de acceso", type="password"
 CLAVE_SECRETA = os.getenv("SECRET_KEY")
 acceso_autorizado = clave_ingresada == CLAVE_SECRETA
 
-st.title("Prometeon - Envío de Correos Masivos")
+st.title("PrometeonDev - Envío de Correos Masivos")
 
 tabs = st.tabs(["📨 Enviar correos", "📋 Verificar correos"])
 
@@ -49,6 +50,38 @@ with tabs[0]:
             help="Límite diario recomendado: 50",
         )
 
+        # Leer enviados existentes si se subió
+        enviados_existentes = set()
+        if enviados_csv:
+            enviados_df = pd.read_csv(enviados_csv)
+            enviados_df["email"] = (
+                enviados_df["email"].astype(str).str.strip().str.lower()
+            )
+            enviados_existentes = set(enviados_df["email"])
+
+        # Leer lista de baja si se subió
+        baja_existente = set()
+        if baja_csv:
+            baja_df = pd.read_csv(baja_csv)
+            baja_df["email"] = baja_df["email"].astype(str).str.strip().str.lower()
+            baja_existente = set(baja_df["email"])
+
+        df["email"] = df["email"].astype(str).str.strip().str.lower()
+
+        # Filtrar correos que ya fueron enviados o están dados de baja
+        excluir_correos = enviados_existentes.union(baja_existente)
+        df_filtrado = df[~df["email"].isin(excluir_correos)].copy()
+
+        # Reducir a máximo número permitido
+        df_filtrado = df_filtrado.head(max_envios)
+        total_correos_a_enviar = len(df_filtrado)
+
+        # Mostrar cuántos se enviarán realmente
+        info_box = st.empty()
+        info_box.info(
+            f"📧 Correos a enviar tras aplicar filtros: {total_correos_a_enviar}"
+        )
+
         if st.button("📨 Enviar correos"):
             if not acceso_autorizado:
                 st.error(
@@ -60,18 +93,6 @@ with tabs[0]:
             resultados_box = st.empty()
             resultados = []
 
-            # Leer enviados existentes si se subió
-            enviados_existentes = set()
-            if enviados_csv:
-                enviados_df = pd.read_csv(enviados_csv)
-                enviados_existentes = set(enviados_df["email"])
-
-            # Leer lista de baja si se subió
-            baja_existente = set()
-            if baja_csv:
-                baja_df = pd.read_csv(baja_csv)
-                baja_existente = set(baja_df["email"])
-
             def update_callback(progreso_actual, total, mensaje):
                 progreso.progress(progreso_actual / total)
                 resultados.append(mensaje)
@@ -79,19 +100,23 @@ with tabs[0]:
 
             with st.spinner("Enviando correos..."):
                 resultados, enviados_exitosos = enviar_func(
-                    correos_df=df,
+                    correos_df=df_filtrado,
                     html_template_str=plantilla,
-                    enviados_existentes=enviados_existentes.union(baja_existente),
+                    enviados_existentes=set(),
                     max_envios=max_envios,
                     callback=update_callback,
                 )
 
                 # Preparar CSV para descarga
                 enviados_nuevos_df = pd.DataFrame({"email": list(enviados_exitosos)})
+
+                fecha_hoy = datetime.now().strftime("%d-%m-%Y")
+                nombre_archivo = f"correos_enviados-{fecha_hoy}.csv"
+
                 st.download_button(
                     "📥 Descargar correos enviados",
                     enviados_nuevos_df.to_csv(index=False),
-                    file_name="correos_enviados.csv",
+                    file_name=nombre_archivo,
                     mime="text/csv",
                 )
 
@@ -99,14 +124,14 @@ with tabs[0]:
 
 with tabs[1]:
     st.markdown(
-        "Sube un archivo con columnas `nombre,email` para verificar con Hunter.io"
+        "Sube un archivo con columnas `nombre,email` para verificar con Mailboxlayer"
     )
 
     archivo_verificar = st.file_uploader(
         "Sube CSV para verificación", type=["csv"], key="verif"
     )
 
-    api_key = st.text_input("🔑 API Key de Hunter.io", type="password")
+    api_key = st.text_input("🔑 API Key de Mailboxlayer", type="password")
 
     if archivo_verificar and api_key:
         df_verif = pd.read_csv(archivo_verificar)
