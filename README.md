@@ -117,8 +117,6 @@ sebastiansierra15-prometeon-mailer/
 
 Este proyecto está licenciado bajo la **Licencia MIT**, lo que significa que puedes usarlo, modificarlo y distribuirlo libremente, siempre y cuando conserves los créditos del autor.
 
-> Consulta el archivo [LICENSE](LICENSE) para más detalles.
-
 ---
 
 ## 👨‍💻 Autor y empresa
